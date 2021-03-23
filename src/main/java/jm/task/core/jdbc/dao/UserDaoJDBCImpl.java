@@ -12,7 +12,8 @@ public class UserDaoJDBCImpl implements UserDao {
     private Util connection;
     private Statement stmt;
     private User user;
-    private Savepoint savepoint;
+    private Savepoint savepoint = null;
+    private ResultSet resultSet;
     private final String tableName = "users";
     private final String ID = "id";
     private final String NAME = "name";
@@ -28,28 +29,28 @@ public class UserDaoJDBCImpl implements UserDao {
             connection = new Util();
             savepoint = connection.setSavepoint();
             stmt = connection.getConnection().createStatement();
-
-
             stmt.executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + "(id bigint auto_increment not null, " +
                     "name varchar(40) null, " +
                     "lastName varchar(40) null, " +
                     "age tinyint null, " +
                     "constraint users_pk primary key (id));"
             );
-
             connection.commit();
-
-            stmt.close();
-            connection.close();
-
         } catch (SQLException e) {
             System.err.println("can not CREATE TABLE");
             e.printStackTrace();
             try {
-                connection.rollback();
+                connection.rollback(savepoint);
             } catch (SQLException e1) {
                 System.err.println("can not rollback ");
                 e1.printStackTrace();
+            }
+        } finally {
+            try {
+                stmt.close();
+                connection.close();
+            } catch (SQLException e2) {
+                e2.printStackTrace();
             }
         }
     }
@@ -59,57 +60,54 @@ public class UserDaoJDBCImpl implements UserDao {
             connection = new Util();
             savepoint = connection.setSavepoint();
             stmt = connection.getConnection().createStatement();
-
-
             stmt.executeUpdate("DROP TABLE IF EXISTS " + tableName + " ;");
-
             connection.commit();
-
-
-            stmt.close();
-            connection.close();
-
         } catch (SQLException e) {
             System.err.println("can not DELETE TABLE");
             e.printStackTrace();
             try {
-                connection.rollback();
+                connection.rollback(savepoint);
             } catch (SQLException e1) {
                 System.err.println("can not rollback ");
                 e1.printStackTrace();
+            } finally {
+                try {
+                    stmt.close();
+                    connection.close();
+                } catch (SQLException e2) {
+                    e2.printStackTrace();
+                }
             }
-
         }
-
     }
 
     public void saveUser(String name, String lastName, byte age) {
         try {
             connection = new Util();
             savepoint = connection.setSavepoint();
-
             stmt = connection.getConnection().createStatement();
             stmt.executeUpdate("INSERT INTO " + tableName
                     + "( " + NAME + ","
                     + " " + LASTNAME + ","
                     + " " + AGE
                     + ") VALUES ( '" + name + "', '" + lastName + "', " + age + " );");
-
             System.out.println("User с именем – " + name + " добавлен в базу данных");
-
             connection.commit();
-
-            stmt.close();
-            connection.close();
-
         } catch (SQLException e) {
             System.err.println("can not SAVE USER");
             e.printStackTrace();
             try {
-                connection.rollback();
+                connection.rollback(savepoint);
             } catch (SQLException e1) {
                 System.err.println("can not rollback ");
                 e1.printStackTrace();
+            } finally {
+                try {
+                    stmt.close();
+                    connection.close();
+                } catch (SQLException e2) {
+                    e2.printStackTrace();
+                }
             }
         }
     }
@@ -119,61 +117,59 @@ public class UserDaoJDBCImpl implements UserDao {
             connection = new Util();
             savepoint = connection.setSavepoint();
             stmt = connection.getConnection().createStatement();
-
             stmt.executeUpdate(" DELETE FROM " + tableName + " where " + ID + " = " + id + " ;");
-
             connection.commit();
-
-            stmt.close();
-            connection.close();
-
         } catch (SQLException e) {
             System.err.println("can not REMOVE USER");
             e.printStackTrace();
             try {
-                connection.rollback();
+                connection.rollback(savepoint);
             } catch (SQLException e1) {
                 e1.printStackTrace();
+            } finally {
+                try {
+                    stmt.close();
+                    connection.close();
+                } catch (SQLException e2) {
+                    e2.printStackTrace();
+                }
             }
         }
     }
 
     public List<User> getAllUsers() {
         List<User> userList = new ArrayList<>();
-
         try {
             connection = new Util();
             savepoint = connection.setSavepoint();
-
             stmt = connection.getConnection().createStatement();
-
-            ResultSet resultSet = stmt.executeQuery("SELECT * FROM " + tableName + " ;");
-
+            resultSet = stmt.executeQuery("SELECT * FROM " + tableName + " ;");
             while (resultSet.next()) {
                 user = new User();
                 user.setId(resultSet.getLong(1));
                 user.setName(resultSet.getString(2));
                 user.setLastName(resultSet.getString(3));
                 user.setAge(resultSet.getByte(4));
-
                 userList.add(user);
             }
-
             connection.commit();
-
-            resultSet.close();
-            stmt.close();
-            connection.close();
         } catch (SQLException e) {
             System.err.println("can not GET ALL USERS");
             e.printStackTrace();
             try {
-                connection.rollback();
+                connection.rollback(savepoint);
             } catch (SQLException e1) {
                 e1.printStackTrace();
+            } finally {
+                try {
+                    resultSet.close();
+                    stmt.close();
+                    connection.close();
+                } catch (SQLException e2) {
+                    e2.printStackTrace();
+                }
             }
         }
-
         return userList;
     }
 
@@ -182,22 +178,22 @@ public class UserDaoJDBCImpl implements UserDao {
             connection = new Util();
             savepoint = connection.setSavepoint();
             stmt = connection.getConnection().createStatement();
-
             stmt.executeUpdate("TRUNCATE TABLE " + tableName + " ;");
-
-
             connection.commit();
-
-            stmt.close();
-            connection.close();
-
         } catch (SQLException e) {
             System.err.println("can not CLEAR TABLE");
             e.printStackTrace();
             try {
-                connection.rollback();
+                connection.rollback(savepoint);
             } catch (SQLException e1) {
                 e1.printStackTrace();
+            } finally {
+                try {
+                    stmt.close();
+                    connection.close();
+                } catch (SQLException e2) {
+                    e2.printStackTrace();
+                }
             }
         }
     }

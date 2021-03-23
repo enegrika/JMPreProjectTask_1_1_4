@@ -10,7 +10,7 @@ public class Util {
 
     private final String DataBase_URL = "jdbc:mysql://localhost:3306/mysql_db";
     private final String USERNAME = "root";
-    private final String PASSWORD = "UserAccount@1975";
+    private final String PASSWORD = "bangkok7";
 
     private Connection connection;
 
@@ -39,7 +39,7 @@ public class Util {
         connection.commit();
     }
 
-    public void rollback() throws SQLException {
+    public void rollback(Savepoint savepoint) throws SQLException {
         connection.rollback(); // ОТМЕНА ИЗМЕНЕНИЙ в таблице и откат к предыдущему состоянию таблицы( СОХРАНЕННОМУ SavePoint)
     }
 
