@@ -18,20 +18,22 @@ public class Util {
     private final String MySQL_DIALECT = "org.hibernate.dialect.MySQL5Dialect";
     private final String DataBase_URL = "jdbc:mysql://localhost:3306/mysql_db";
     private final String USERNAME = "root";
-    private final String PASSWORD = "bangkok7";
+    private final String PASSWORD = "UserAccount@1975";
 
     private Connection connection;
     private Properties properties;
     private Configuration configuration;
     private SessionFactory sessionFactory;
 
-    public Util() {
+    public Util(){
+
     }
 
-
-    ////////// HIBERNATE connection - NO XML with "Properties" Object and SessionFactory
+    //////// HIBERNATE sessionFactory getter
 
     public SessionFactory getSessionFactory() {
+        ////////// HIBERNATE connection - NO XML with "Properties" Object and SessionFactory
+
         //1st SET all necessary PROPERTIES
         properties = new Properties();
         properties.setProperty(Environment.DRIVER, DRIVER);
@@ -51,24 +53,22 @@ public class Util {
 
         //4th BUILD SESSION FACTORY to execute Queries
         sessionFactory = configuration.buildSessionFactory(new StandardServiceRegistryBuilder().build());
+
         return sessionFactory;
     }
 
-
-
-    ////////// JDBC connection to DB with "Connection" Object
-
-
+    ///////// JDBC getters and operations
     public Connection getConnection() throws SQLException {
+
+        ////////// JDBC connection to DB with "Connection" Object
 
         connection = DriverManager.getConnection(DataBase_URL, USERNAME, PASSWORD);
         connection.setAutoCommit(false);// ОТКЛЮЧАЕМ! автовыполнение SQL запросов dlya rezhima TRANSACTIONS (НО ОТМЕНИТЬ МОЖНО ТОЛЬКО ОПЕРАЦИИ ИЗМЕНЕНИЯ данных в таблице!)
         connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);// уровень изоляции транзакции // выставляем уровень изоляции транзакции
+
         return connection;
     }
 
-
-    ///////// JDBC getters and operations
     public void close() throws SQLException {
         connection.close();
     }
