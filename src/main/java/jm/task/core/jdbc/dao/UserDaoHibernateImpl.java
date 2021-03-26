@@ -16,18 +16,8 @@ public class UserDaoHibernateImpl implements UserDao {
 
     }
 
-
     @Override
     public void createUsersTable() {
-        try {
-            sessionFactory = new Util().getSessionFactory();
-
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            sessionFactory.close();
-        }
 
     }
 

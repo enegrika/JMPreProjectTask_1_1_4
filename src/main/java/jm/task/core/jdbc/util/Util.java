@@ -25,16 +25,13 @@ public class Util {
     private Configuration configuration;
     private SessionFactory sessionFactory;
 
-    public Util() throws SQLException {
+    public Util() {
+    }
 
-        ////////// JDBC connection to DB with "Connection" Object
 
-        connection = DriverManager.getConnection(DataBase_URL, USERNAME, PASSWORD);
-        connection.setAutoCommit(false);// ОТКЛЮЧАЕМ! автовыполнение SQL запросов dlya rezhima TRANSACTIONS (НО ОТМЕНИТЬ МОЖНО ТОЛЬКО ОПЕРАЦИИ ИЗМЕНЕНИЯ данных в таблице!)
-        connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);// уровень изоляции транзакции // выставляем уровень изоляции транзакции
+    ////////// HIBERNATE connection - NO XML with "Properties" Object and SessionFactory
 
-        ////////// HIBERNATE connection - NO XML with "Properties" Object and SessionFactory
-
+    public SessionFactory getSessionFactory() {
         //1st SET all necessary PROPERTIES
         properties = new Properties();
         properties.setProperty(Environment.DRIVER, DRIVER);
@@ -54,21 +51,24 @@ public class Util {
 
         //4th BUILD SESSION FACTORY to execute Queries
         sessionFactory = configuration.buildSessionFactory(new StandardServiceRegistryBuilder().build());
-
-
-    }
-
-    //////// HIBERNATE sessionFactory getter
-
-    public SessionFactory getSessionFactory() {
         return sessionFactory;
     }
 
-    ///////// JDBC getters and operations
-    public Connection getConnection() {
+
+
+    ////////// JDBC connection to DB with "Connection" Object
+
+
+    public Connection getConnection() throws SQLException {
+
+        connection = DriverManager.getConnection(DataBase_URL, USERNAME, PASSWORD);
+        connection.setAutoCommit(false);// ОТКЛЮЧАЕМ! автовыполнение SQL запросов dlya rezhima TRANSACTIONS (НО ОТМЕНИТЬ МОЖНО ТОЛЬКО ОПЕРАЦИИ ИЗМЕНЕНИЯ данных в таблице!)
+        connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);// уровень изоляции транзакции // выставляем уровень изоляции транзакции
         return connection;
     }
 
+
+    ///////// JDBC getters and operations
     public void close() throws SQLException {
         connection.close();
     }
