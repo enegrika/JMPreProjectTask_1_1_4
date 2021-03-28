@@ -2,9 +2,11 @@ package jm.task.core.jdbc.util;
 
 import jm.task.core.jdbc.model.User;
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.*;
 
+import javax.imageio.spi.ServiceRegistry;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -25,42 +27,49 @@ public class Util {
     private Configuration configuration;
     private SessionFactory sessionFactory;
 
-    public Util(){
+    public Util() {
 
     }
 
-    //////// HIBERNATE sessionFactory getter
+
+    ////////// HIBERNATE connection SessionFactory - NO XML with "Properties" Object and SessionFactory
 
     public SessionFactory getSessionFactory() {
-        ////////// HIBERNATE connection - NO XML with "Properties" Object and SessionFactory
 
-        //1st SET all necessary PROPERTIES
-        properties = new Properties();
-        properties.setProperty(Environment.DRIVER, DRIVER);
-        properties.setProperty(Environment.DIALECT, MySQL_DIALECT);
-        properties.setProperty(Environment.URL, DataBase_URL);
-        properties.setProperty(Environment.USER, USERNAME);
-        properties.setProperty(Environment.PASS, PASSWORD);
+        if (sessionFactory == null) {
 
-        properties.setProperty(Environment.HBM2DDL_AUTO, "update");//// VERY IMPORTANT SETTING
+            //1st SET all necessary PROPERTIES // same as in hibernate.cfg.xml
+            properties = new Properties();
+            properties.setProperty(Environment.DRIVER, DRIVER);
+            properties.setProperty(Environment.DIALECT, MySQL_DIALECT);
+            properties.setProperty(Environment.URL, DataBase_URL);
+            properties.setProperty(Environment.USER, USERNAME);
+            properties.setProperty(Environment.PASS, PASSWORD);
+            properties.setProperty(Environment.SHOW_SQL, "true");
+            properties.setProperty(Environment.CURRENT_SESSION_CONTEXT_CLASS,"thread");
+//            properties.setProperty(Environment.HBM2DDL_AUTO, "update");//// BETTER NOT USE!
 
-        //2nd MAKE Config Object
-        configuration = new Configuration();
-        configuration.setProperties(properties);
+            //2nd MAKE Config Object //
+            configuration = new Configuration();
+            configuration.setProperties(properties);
 
-        //3rd ADD OUR CLASSES TO be ANNOTATED (ABLE to CREATE READ UPDATE and DELETE (CRUD) operations with TABLES)
-        configuration.addAnnotatedClass(User.class); // NOW our MODEL CLASS - "USER" can be ANNOTATED
+            //3rd ADD OUR CLASSES TO be ANNOTATED (ABLE to CREATE READ UPDATE and DELETE (CRUD) operations with TABLES)
+            configuration.addAnnotatedClass(User.class); // NOW our MODEL CLASS - "USER" can be ANNOTATED
 
-        //4th BUILD SESSION FACTORY to execute Queries
-        sessionFactory = configuration.buildSessionFactory(new StandardServiceRegistryBuilder().build());
+            //4th BUILD SESSION FACTORY to execute Queries
 
+            sessionFactory = configuration.buildSessionFactory(new StandardServiceRegistryBuilder()
+                    .applySettings(configuration.getProperties()).build());
+
+        }
         return sessionFactory;
     }
 
-    ///////// JDBC getters and operations
-    public Connection getConnection() throws SQLException {
 
-        ////////// JDBC connection to DB with "Connection" Object
+
+    ////////// JDBC connection to DB with "Connection" Object
+
+    public Connection getConnection() throws SQLException {
 
         connection = DriverManager.getConnection(DataBase_URL, USERNAME, PASSWORD);
         connection.setAutoCommit(false);// ОТКЛЮЧАЕМ! автовыполнение SQL запросов dlya rezhima TRANSACTIONS (НО ОТМЕНИТЬ МОЖНО ТОЛЬКО ОПЕРАЦИИ ИЗМЕНЕНИЯ данных в таблице!)
