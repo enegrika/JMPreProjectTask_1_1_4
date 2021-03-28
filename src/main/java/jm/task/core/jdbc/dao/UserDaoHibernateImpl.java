@@ -22,7 +22,7 @@ public class UserDaoHibernateImpl implements UserDao {
     }
 
     @Override
-    public void createUsersTable() {
+    public void createUsersTable() { // HIBERNATE автоматически создает таблицу и удаляет ее в конце
         sessionFactory = new Util().getSessionFactory();
         session = sessionFactory.openSession();
         session.createSQLQuery("CREATE TABLE IF NOT EXISTS " + tableName + "(id bigint auto_increment not null, " +
