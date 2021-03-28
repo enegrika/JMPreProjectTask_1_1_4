@@ -47,6 +47,7 @@ public class Util {
             properties.setProperty(Environment.PASS, PASSWORD);
             properties.setProperty(Environment.SHOW_SQL, "true");
             properties.setProperty(Environment.CURRENT_SESSION_CONTEXT_CLASS,"thread");
+            properties.setProperty(Environment.AUTOCOMMIT,"false");
 //            properties.setProperty(Environment.HBM2DDL_AUTO, "update");//// BETTER NOT USE!
 
             //2nd MAKE Config Object //

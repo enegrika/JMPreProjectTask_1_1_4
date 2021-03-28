@@ -19,7 +19,7 @@ public class Main {
         userService.saveUser("John","Corn", (byte) 39);
         userService.saveUser("Ben","Faedy", (byte) 40);
 
-//        userService.removeUserById(5);
+        userService.removeUserById(2);
 
         for (User user : userService.getAllUsers()) {
             System.out.println(user);
