@@ -18,9 +18,9 @@ public class Util {
 
     private final String DRIVER = "com.mysql.cj.jdbc.Driver";
     private final String MySQL_DIALECT = "org.hibernate.dialect.MySQL5Dialect";
-    private final String DataBase_URL = "jdbc:mysql://localhost:3306/mysql_db";
+    private final String DataBase_URL = "jdbc:mysql://localhost:3306/JMDatabaseTask_1_1_3";
     private final String USERNAME = "root";
-    private final String PASSWORD = "UserAccount@1975";
+    private final String PASSWORD = "bangkok7";
 
     private Connection connection;
     private Properties properties;
